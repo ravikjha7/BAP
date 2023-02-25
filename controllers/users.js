@@ -25,7 +25,9 @@ module.exports.setProfile = async (req, res) => {
             }
          });
 
-         await User.deleteOne(existingUser);
+         if(existingUser) {
+            await User.deleteOne(existingUser);
+         }
 
         user.password = await bcrypt.hash(user.password, 12);
 
@@ -97,9 +99,21 @@ module.exports.updateProfile = async (req, res) => {
 
     try {
 
-        console.log(req.userId);
-
+        // console.log(req.userId);
         const { _id } = req.body;
+
+        if(req.userId !== _id) {
+            return res.status(404).json({
+                description: "You can update your account only!",
+                content: {
+                    type: 'Application Error',
+                    code: '404',
+                    path: '/user/profile',
+                    message: 'You can update your account only'
+                }
+            })
+        }
+
 
         const user = req.body;
 
@@ -121,6 +135,8 @@ module.exports.updateProfile = async (req, res) => {
 
     } catch(error) {
 
+        // console.log(error.code);
+
         res.status(500).json({
             description: 'User profile could not be updated due to unexpected error',
             content: {
@@ -138,11 +154,15 @@ module.exports.getProfile = async(req, res) => {
 
     try {
 
-        console.log(req.params);
+        // console.log(req.params);
 
         const { email } = req.params;
 
         const user = await User.findOne({ email });
+
+        // console.log(req.userId);
+
+        console.log(req.userId + " " + user._id);
 
         if(!user) {
             return res.status(404).json({
