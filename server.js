@@ -8,12 +8,14 @@ const scholarshipRoutes = require('./routes/scholarships');
 const adminRoutes = require('./routes/admins');
 const applyScholarshipRoutes = require('./routes/applyScholarships');
 const savesRoutes = require('./routes/saves');
+const cors = require('cors');
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 connectDB();
 
+app.use(cors());
 app.use('/user', userRoutes);
 app.use('/scholarship', scholarshipRoutes);
 app.use('/admin', adminRoutes);
