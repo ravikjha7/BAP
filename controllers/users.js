@@ -1,6 +1,10 @@
 const User = require('./../models/user');
 const bcrypt = require('bcryptjs');
 const Mongoose = require('mongoose');
+const jwt = require('jsonwebtoken');
+require("dotenv").config();
+
+const secret = process.env.JWT_SECRET;
 
 module.exports.setProfile = async (req, res) => {
 
@@ -26,7 +30,9 @@ module.exports.setProfile = async (req, res) => {
 
         user.password = "";
 
-        res.status(200).json({ content: user, description: 'User profile is created'});
+        const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: "7d" });
+
+        res.status(200).json({ content: user, token, description: 'User profile is created'});
 
     } catch(error) {
 
@@ -88,7 +94,7 @@ module.exports.getProfile = async(req, res) => {
 
         const { email } = req.params;
 
-        const user = await User.find({ "email": email });
+        const user = await User.findOne({ email });
 
         if(!user) {
             return res.status(404).json({
@@ -122,24 +128,40 @@ module.exports.getProfile = async(req, res) => {
 module.exports.login = async (req, res) => {
 
     try {
-        
-        const { email } = req.params;
 
-        const user = await User.find({ "email": email });
+        const { email, password } = req.body;
+
+        const user = await User.findOne({ email });
 
         if(!user) {
             return res.status(404).json({
-                description: "Invalid Email",
+                description: "User Does Not Exist !!!",
                 content: {
                     type: 'Application Error',
                     code: '404',
-                    path: '/user/profile',
-                    message: 'Invalid Email'
+                    path: '/user/profile/login',
+                    message: 'User does not exist'
                 }
             });
         }
 
-        res.status(200).json({ content: user, description: 'User profile is retrieved'});
+        const isPasswordCorrect = await bcrypt.compare(password, user.password);
+
+        if(!isPasswordCorrect) {
+            return res.status(404).json({
+                description: "Invalid Credentials !!!",
+                content: {
+                    type: 'Application Error',
+                    code: '404',
+                    path: '/user/profile/login',
+                    message: 'Invalid credentials'
+                }
+            });
+        }
+
+        const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: "7d" });
+
+        res.status(200).json({ content: user, token, description: 'User profile is retrieved'});
 
     } catch (error) {
         res.status(500).json({
@@ -147,7 +169,7 @@ module.exports.login = async (req, res) => {
             content: {
                 type: 'System error',
                 code: '500',
-                path: '/user/profile',
+                path: '/user/profile/login',
                 message: `Error processing request ${error.message}`
             }
         });
