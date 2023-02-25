@@ -1,0 +1,32 @@
+const jwt = require('jsonwebtoken');
+require("dotenv").config();
+
+const secret = process.env.JWT_SECRET;
+
+module.exports.auth = async(req, res, next) => {
+
+    try {
+
+        const token = req.headers.authorization.split(" ")[1];
+
+        let decodedData;
+
+        decodedData = jwt.verify(token, secret);
+
+        req.userId = decodedData.id;
+
+        next();
+
+    } catch(error) {
+        
+        return res.status(404).json({ 
+            description: "Invalid Token !!!",
+            content: {
+                type: 'Application Error',
+                code: '404',
+                message: 'Invalid Token'
+            }
+         });
+    }
+
+}

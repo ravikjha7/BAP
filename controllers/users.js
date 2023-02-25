@@ -3,6 +3,7 @@ const bcrypt = require('bcryptjs');
 const Mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 require("dotenv").config();
+const sendEmail = require("./../utils/email");
 
 const secret = process.env.JWT_SECRET;
 
@@ -14,7 +15,7 @@ module.exports.setProfile = async (req, res) => {
 
         const existingUser = await User.findOne({ "email": user.email });
         
-        if(existingUser) return res.status(404).json({ 
+        if(existingUser && existingUser.isVerified) return res.status(404).json({ 
             description: "User Already Exists !!!",
             content: {
                 type: 'Application Error',
@@ -30,9 +31,50 @@ module.exports.setProfile = async (req, res) => {
 
         user.password = "";
 
-        const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: "7d" });
+        const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: "1d" });
 
-        res.status(200).json({ content: user, token, description: 'User profile is created'});
+        try {
+
+            console.log(user.name.split(" ")[0]);
+
+            const message = `
+            <html>
+            <body>
+            
+            <p>Hello <strong>${user.name.split(" ")[0]}</strong>,</p>
+            <p>Thank you  for signing up for Mentor Connect! We're excited to have you on board.</p> 
+
+            <p>Before you can start using the app, we need to verify your account. To do this, please click on the link below:</p> 
+            <p><a href="${process.env.BASE_URL}/user/verify/${token}">www.mentorconnect.com/verifyMyAccount</a><br></p>
+
+            <p>Once you have verified your email, you can start using Mentor Connect to find job opportunities and connect with mentors.</p>
+
+            <p>If you did not sign up for Mentor Connect, you can safely ignore this email.</p>
+
+            <p>Thanks for Joining Mentor Connect! Hope you would get your dream job or scholarship soon !!!</p>
+            
+            <p>Thanks,<br>
+            Mentor Connect</p>
+            </body>
+            </html>
+            `;
+            sendEmail(user.email, "Verification Email - Mentor Connect !!!", message);
+        } catch (err) {
+
+            console.log(err);
+
+            return res.status(404).json({ 
+                description: "Invalid Email !!!",
+                content: {
+                    type: 'Application Error',
+                    code: '404',
+                    path: '/user/profile',
+                    message: 'Invalid Email'
+                }
+             });
+        }
+
+        res.status(200).json({ content: user, description: 'User profile is created'});
 
     } catch(error) {
 
@@ -52,6 +94,8 @@ module.exports.setProfile = async (req, res) => {
 module.exports.updateProfile = async (req, res) => {
 
     try {
+
+        console.log(req.userId);
 
         const { _id } = req.body;
 
@@ -89,7 +133,7 @@ module.exports.updateProfile = async (req, res) => {
 };
 
 module.exports.getProfile = async(req, res) => {
-    
+
     try {
 
         const { email } = req.params;
@@ -159,9 +203,21 @@ module.exports.login = async (req, res) => {
             });
         }
 
+        if(!user.isVerified) {
+            return res.status(404).json({
+                description: "Verify Your Account !!!",
+                content: {
+                    type: 'Application Error',
+                    code: '404',
+                    path: '/user/profile/login',
+                    message: 'Verify Your Account'
+                }
+            });
+        }
+
         const token = jwt.sign({ email: user.email, id: user._id }, secret, { expiresIn: "7d" });
 
-        res.status(200).json({ content: user, token, description: 'User profile is retrieved'});
+        res.status(200).json({ content: user, token, description: 'Logged in Successfully'});
 
     } catch (error) {
         res.status(500).json({
@@ -173,6 +229,26 @@ module.exports.login = async (req, res) => {
                 message: `Error processing request ${error.message}`
             }
         });
+    }
+
+};
+
+module.exports.verifyToken = async (req, res) => {
+
+    const { token } = req.params;
+
+    try {
+
+        let decodedData = jwt.verify(token, secret);
+
+        await User.findByIdAndUpdate(decodedData.id, { verified: true });
+
+        return res.status(200).json({ message: "User Successfully Verified !!!" });
+
+    } catch(error) {
+
+        return res.status(500).json({ message: "Invalid Token or Token Expired !!!" });
+
     }
 
 }

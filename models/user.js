@@ -19,7 +19,11 @@ const UserSchema = new Mongoose.Schema({
         type: Date,
         default: new Date()
     },
-    resume: String
+    resume: String,
+    isVerified: {
+        type: Boolean,
+        default: false
+    }
 });
 
 module.exports = Mongoose.model('User', UserSchema);
