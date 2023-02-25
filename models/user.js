@@ -6,22 +6,20 @@ const UserSchema = new Mongoose.Schema({
         required: true,
         unique: true
     },
-    first_name: {
+    password: {
         type: String,
         required: true
     },
-    middle_name: String,
-    last_name: String,
-    full_name: String,
+    name: {
+        type: String,
+        required: true
+    },
     mobile: Number,
     created_at: {
         type: Date,
         default: new Date()
     },
-    last_modified_at: {
-        type: Date,
-        default: new Date()
-    },
+    resume: String
 });
 
 module.exports = Mongoose.model('User', UserSchema);

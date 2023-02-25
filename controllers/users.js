@@ -1,4 +1,5 @@
 const User = require('./../models/user');
+const bcrypt = require('bcryptjs');
 const Mongoose = require('mongoose');
 
 module.exports.setProfile = async (req, res) => {
@@ -7,7 +8,23 @@ module.exports.setProfile = async (req, res) => {
 
         let user = req.body;
 
+        const existingUser = await User.findOne({ "email": user.email });
+        
+        if(existingUser) return res.status(404).json({ 
+            description: "User Already Exists !!!",
+            content: {
+                type: 'Application Error',
+                code: '404',
+                path: '/user/profile',
+                message: 'User already exists'
+            }
+         });
+
+        user.password = await bcrypt.hash(user.password, 12);
+
         user = await User.create(user);
+
+        user.password = "";
 
         res.status(200).json({ content: user, description: 'User profile is created'});
 
@@ -99,6 +116,41 @@ module.exports.getProfile = async(req, res) => {
             }
         });
 
+    };
+};
+
+module.exports.login = async (req, res) => {
+
+    try {
+        
+        const { email } = req.params;
+
+        const user = await User.find({ "email": email });
+
+        if(!user) {
+            return res.status(404).json({
+                description: "Invalid Email",
+                content: {
+                    type: 'Application Error',
+                    code: '404',
+                    path: '/user/profile',
+                    message: 'Invalid Email'
+                }
+            });
+        }
+
+        res.status(200).json({ content: user, description: 'User profile is retrieved'});
+
+    } catch (error) {
+        res.status(500).json({
+            description: 'User could not be logged in due to unexpected error',
+            content: {
+                type: 'System error',
+                code: '500',
+                path: '/user/profile',
+                message: `Error processing request ${error.message}`
+            }
+        });
     }
 
 }
