@@ -30,11 +30,22 @@ const UserSchema = new Mongoose.Schema({
         type: Boolean,
         default: false
     },
-    applied_scholarships: [Object],
-    accepted_scholarships: [Object],
-    rejected_scholarships: [Object],
-    all_scholarships: [Object],
-    saved_scholarships: [Object]
+    noOfScholarships: {
+        type: Number,
+        default: 0
+    },
+    noOfCourses: {
+        type: Number,
+        default: 0
+    },
+    noOfMentors: {
+        type: Number,
+        default: 0
+    },
+    noOfJobs: {
+        type: Number,
+        default: 0
+    }
 });
 
 module.exports = Mongoose.model('User', UserSchema);

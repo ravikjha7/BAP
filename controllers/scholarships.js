@@ -1,4 +1,3 @@
-const User = require('../models/user');
 const Scholarship = require('./../models/scholarship');
 
 module.exports.addScholarships = async (req, res) => {
@@ -85,75 +84,6 @@ module.exports.getScholarship = async (req, res) => {
             }
         });
 
-    }
-
-}
-
-module.exports.applyScholarship = async (req, res) => {
-
-    try {
-        
-        const { _id, scholarship_id } = req.body;
-
-        let user = await User.findById(_id);
-        let scholarship = await Scholarship.findById(scholarship_id);
-
-        if(!user) {
-            res.status(404).json({
-                description: "User Not Found !!!",
-                content: {
-                    type: 'Client Error',
-                    code: '404',
-                    message: 'User not found'
-                }
-            });
-        };
-
-        if(!scholarship) {
-            res.status(404).json({
-                description: "Scholarship Not Found !!!",
-                content: {
-                    type: 'Client Error',
-                    code: '404',
-                    message: 'Scholarship not found'
-                }
-            });
-        };
-
-        user.applied_scholarships.push({
-            id: scholarship._id,
-            name: scholarship.name,
-            amount: scholarship.amount,
-            description: scholarship.description
-        });
-
-        user.all_scholarships.push({
-            id: scholarship._id,
-            name: scholarship.name,
-            amount: scholarship.amount,
-            description: scholarship.description
-        });
-
-        scholarship.applied_users.push(user);
-
-        await user.save();
-        await scholarship.save();
-
-        res.status(200).json({
-            description: 'Applied Successfully !!!',
-            content: user
-        });
-
-    } catch (error) {
-        res.status(500).json({
-            description: 'Internal Server Error',
-            content: {
-                type: 'System error',
-                code: '500',
-                path: '/scholarship',
-                message: `Error processing request ${error.message}`
-            }
-        });
     }
 
 }

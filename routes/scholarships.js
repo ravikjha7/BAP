@@ -4,7 +4,6 @@ const router = express.Router();
 const scholarhips = require('./../controllers/scholarships');
 const auth = require('./../middlewares/auth');
 
-router.route('/apply').post(auth.auth, scholarhips.applyScholarship);
 router.route('/:id').get(auth.auth, scholarhips.getScholarship);
 router.route('/').get(auth.auth, scholarhips.getScholarships).post(scholarhips.addScholarships);
 

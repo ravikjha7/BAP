@@ -1,4 +1,5 @@
 const User = require('./../models/user');
+const UserScholarship = require('./../models/userscholarship');
 
 module.exports.getUsers = async (req, res) => {
 
