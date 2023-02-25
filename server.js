@@ -8,6 +8,7 @@ const scholarshipRoutes = require('./routes/scholarships');
 const adminRoutes = require('./routes/admins');
 const applyScholarshipRoutes = require('./routes/applyScholarships');
 const savesRoutes = require('./routes/saves');
+const removeRoutes = require('./routes/removes');
 const cors = require('cors');
 
 app.use(express.json());
@@ -21,6 +22,7 @@ app.use('/scholarship', scholarshipRoutes);
 app.use('/admin', adminRoutes);
 app.use('/apply/scholarship', applyScholarshipRoutes);
 app.use('/save', savesRoutes);
+app.use('/remove', removeRoutes);
 
 app.get('/', (req, res) => {
     res.send("Welcome to Skill-A-Thon 1.0 !!!");
