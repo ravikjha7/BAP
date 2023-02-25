@@ -33,7 +33,8 @@ const UserSchema = new Mongoose.Schema({
     applied_scholarships: [Object],
     accepted_scholarships: [Object],
     rejected_scholarships: [Object],
-    all_scholarships: [Object]
+    all_scholarships: [Object],
+    saved_scholarships: [Object]
 });
 
 module.exports = Mongoose.model('User', UserSchema);
