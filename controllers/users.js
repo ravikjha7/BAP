@@ -25,6 +25,8 @@ module.exports.setProfile = async (req, res) => {
             }
          });
 
+         await User.deleteOne(existingUser);
+
         user.password = await bcrypt.hash(user.password, 12);
 
         user = await User.create(user);
@@ -136,6 +138,8 @@ module.exports.getProfile = async(req, res) => {
 
     try {
 
+        console.log(req.params);
+
         const { email } = req.params;
 
         const user = await User.findOne({ email });
@@ -176,6 +180,8 @@ module.exports.login = async (req, res) => {
         const { email, password } = req.body;
 
         const user = await User.findOne({ email });
+
+        // console.log(user);
 
         if(!user) {
             return res.status(404).json({
@@ -241,7 +247,9 @@ module.exports.verifyToken = async (req, res) => {
 
         let decodedData = jwt.verify(token, secret);
 
-        await User.findByIdAndUpdate(decodedData.id, { verified: true });
+        // console.log(decodedData);
+
+        await User.findByIdAndUpdate(decodedData.id, { isVerified: true });
 
         return res.status(200).json({ message: "User Successfully Verified !!!" });
 
