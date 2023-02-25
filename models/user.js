@@ -14,7 +14,7 @@ const UserSchema = new Mongoose.Schema({
         type: String,
         required: true
     },
-    mobile: Number,
+    mobile: String,
     created_at: {
         type: Date,
         default: new Date()
