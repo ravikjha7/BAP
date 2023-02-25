@@ -162,9 +162,7 @@ module.exports.getProfile = async(req, res) => {
 
         // console.log(req.userId);
 
-        console.log(req.userId + " " + user._id);
-
-        if(!user) {
+        if(!user || (String(req.userId) !== String(user._id))) {
             return res.status(404).json({
                 description: "User profile could not be retrieved",
                 content: {
