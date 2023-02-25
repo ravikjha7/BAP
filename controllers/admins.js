@@ -2,6 +2,8 @@ const User = require('./../models/user');
 require("dotenv").config();
 const secret = process.env.JWT_SECRET;
 const jwt = require('jsonwebtoken');
+const Scholarship = require('./../models/scholarship');
+const scholarship = require('./../models/scholarship');
 
 module.exports.getUsers = async (req, res) => {
 
@@ -22,6 +24,52 @@ module.exports.getUsers = async (req, res) => {
                 type: 'System error',
                 code: '500',
                 path: '/admin/users',
+                message: `Error processing request ${error.message}`
+            }
+        });
+
+    }
+
+}
+
+module.exports.getScholarships = async (req, res) => {
+
+    try {
+        
+        let scholarhipsFetched = await Scholarship.find({});
+
+        let scholarships = [];
+
+        scholarhipsFetched.forEach(scholarship => {
+            scholarships.push({
+                name: scholarship.name,
+                description: scholarship.description,
+                categories: scholarship.categories,
+                _id: scholarship._id,
+                gender: scholarship.gender,
+                deadline: scholarship.deadline,
+                income: scholarship.income,
+                amount: scholarship.amount,
+                noOfAppliedUsers: scholarship.applied_users.length,
+                noOfAcceptedUsers: scholarship.accepted_users.length,
+                noOfRejectedUsers: scholarship.rejected_users.length
+            });
+        });
+
+        res.status(200).json({
+            description: "Scholarships fetched Successfully !!!",
+            content: scholarships
+        });
+
+
+    } catch (error) {
+        
+        res.status(500).json({
+            description: 'Scholarships could not be fetchef due to unexpected error',
+            content: {
+                type: 'System error',
+                code: '500',
+                path: '/admin/scholarships',
                 message: `Error processing request ${error.message}`
             }
         });
