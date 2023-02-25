@@ -20,6 +20,12 @@ const UserSchema = new Mongoose.Schema({
         default: new Date()
     },
     resume: String,
+    profile_pic: String,
+    category: String,
+    college_name: String,
+    course: String,
+    yearOfStudy: String,
+    branch: String,
     isVerified: {
         type: Boolean,
         default: false
