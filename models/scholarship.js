@@ -5,14 +5,17 @@ const ScholarshipSchema = new Mongoose.Schema({
         type: String,
         required: true
     },
-    category: {
-        type: String
+    categories: {
+        type: [String]
+    },
+    description: {
+        type: String,
+        default: ''
     },
     gender: {
         type: String,
         enum: ['female', 'male', 'transgender']
     },
-    caste: String,
     course: String,
     branch: String,
     deadline: {
@@ -23,7 +26,10 @@ const ScholarshipSchema = new Mongoose.Schema({
     amount: {
         type: String,
         required: true
-    }
+    },
+    applied_users: [Object],
+    accepted_users: [Object],
+    rejected_users: [Object]
 });
 
 module.exports = Mongoose.model('Scholarship', ScholarshipSchema);

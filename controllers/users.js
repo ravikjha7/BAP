@@ -154,15 +154,9 @@ module.exports.getProfile = async(req, res) => {
 
     try {
 
-        // console.log(req.params);
+        const user = await User.findById(req.userId);
 
-        const { email } = req.params;
-
-        const user = await User.findOne({ email });
-
-        // console.log(req.userId);
-
-        if(!user || (String(req.userId) !== String(user._id))) {
+        if(!user) {
             return res.status(404).json({
                 description: "User profile could not be retrieved",
                 content: {

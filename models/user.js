@@ -29,7 +29,11 @@ const UserSchema = new Mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false
-    }
+    },
+    applied_scholarships: [Object],
+    accepted_scholarships: [Object],
+    rejected_scholarships: [Object],
+    all_scholarships: [Object]
 });
 
 module.exports = Mongoose.model('User', UserSchema);
