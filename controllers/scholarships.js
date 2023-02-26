@@ -27,6 +27,8 @@ module.exports.getScholarships = async (req, res) => {
         if(req.query.course) query.course = new RegExp(req.query.course, 'i');
         if(req.query.income) query.income = {$gte: Number(req.query.income)};
         if(req.query.gender) query.gender = req.query.gender;
+        query.deadline = {$gte: new Date().toISOString().substring(0, 10)};
+        
 
         const scholarships = await Scholarship.find(query);
 
