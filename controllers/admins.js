@@ -117,5 +117,28 @@ module.exports.login = async (req, res) => {
 }
 
 module.exports.getMentors = async (req, res) => {
-    
+
+    try {
+        
+        const mentors = await Mentor.find({});
+
+        res.status(200).json({
+            description: "Mentors Fetched Successfully!",
+            content: mentors
+        });
+
+    } catch (error) {
+        
+        res.status(500).json({
+            description: "Mentors could not be fetchef due to some unexpected error",
+            content: {
+                type: 'System Error',
+                code: '500',
+                path: '/admin/login',
+                message: `Error processing request ${error.message}`
+            }
+        });
+
+    }
+
 }
