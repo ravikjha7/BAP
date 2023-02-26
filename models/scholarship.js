@@ -5,6 +5,10 @@ const ScholarshipSchema = new Mongoose.Schema({
         type: String,
         required: true
     },
+    provider_name: {
+        type: String,
+        required: true
+    },
     categories: {
         type: [String]
     },
