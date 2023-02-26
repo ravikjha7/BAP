@@ -32,7 +32,7 @@ module.exports.getScholarships = async (req, res) => {
 
         const scholarships = await Scholarship.find(query);
 
-        const user = await UserScholarship.find({"_id": req.userId});
+        const user = await UserScholarship.findOne({"_id": req.userId});
 
         if(!user) user = await UserScholarship.create({"_id": req.userId});
 
@@ -43,7 +43,7 @@ module.exports.getScholarships = async (req, res) => {
             saved: user.saved_scholarships
         };
 
-        // console.log(myScholarships);
+        // console.log(user);
 
         res.status(200).json({
             description: "Scholarships List Fetched!",
