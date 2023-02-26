@@ -26,8 +26,8 @@ const SessionSchema = new Mongoose.Schema({
         required: true
     },
     registered_users: {
-        type: [String],
-        default: []
+        type: Number,
+        default: 0
     }
     
 });

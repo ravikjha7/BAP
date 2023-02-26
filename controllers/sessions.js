@@ -1,6 +1,8 @@
 const Session = require('./../models/session');
 const Mentor = require('./../models/mentor');
 const User = require('./../models/user');
+const UserSession = require('./../models/usersession');
+const SessionUser = require('./../models/sessionuser');
 
 module.exports.createSession = async (req, res) => {
 
@@ -47,10 +49,21 @@ module.exports.getSessions = async (req, res) => {
 
         const sessions = await Session.find(query);
 
+        let user = await UserSession.findById(req.userId);
+
+        if(!user) user = await UserSession.create({"_id": req.userId});
+
+        const mySessions = {
+            applied: user.registered_sessions,
+            saved: user.saved_sessions
+        };
+
+
         res.status(200).json({
             description: 'Sessions list fetched',
-            content: sessions
-        })
+            content: sessions,
+            mySessions
+        });
 
     } catch (error) {
         
@@ -104,14 +117,46 @@ module.exports.registerForSession = async (req, res) => {
         
         const { _id } = req.body;
         
-        const session = await Session.findById(_id);
-        session.registered_users.push(req.userId);
+        let session = await Session.findById(_id);
 
-        const user = await User.findById(req.userId);
+        if(!session) {
+            res.status(404).json({
+                description: "Session Not Found !!!",
+                content: {
+                    type: 'Client Error',
+                    code: '404',
+                    message: 'Session not found'
+                }
+            });
+        };
+
+        session.registered_users += 1;
+
+        let user = await User.findById(req.userId);
         user.noOfMentors += 1;
 
         await session.save();
         await user.save();
+
+        user = await UserSession.findOne({"_id": req.userId});
+        
+        if(!user) user = await UserSession.create({"_id": req.userId});
+        
+        user.registered_sessions.push({
+            id: session._id,
+            title: session.title,
+            mentor_name: session.mentor_name,
+            date: session.date,
+            time: session.time
+        });
+
+        await user.save();
+
+        session = await SessionUser.findOne({"_id": _id});
+        if(!session) session = await SessionUser.create({"_id": _id});
+        session.registered_users.push(req.userId);
+        
+        await session.save();
 
         res.status(200).json({
             description: 'Registration Successful for the Session',
