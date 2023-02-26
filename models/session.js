@@ -6,6 +6,14 @@ const SessionSchema = new Mongoose.Schema({
         type: String,
         required: true
     },
+    title: {
+        type: String,
+        required: true
+    },
+    mentor_name: {
+        type: String,
+        required: true
+    },
     date: {
         type: String,
         required: true
@@ -16,7 +24,7 @@ const SessionSchema = new Mongoose.Schema({
     },
     registered_users: {
         type: [String],
-        required: true
+        default: []
     }
     
 });
