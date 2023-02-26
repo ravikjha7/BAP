@@ -2,8 +2,9 @@ const User = require('./../models/user');
 require("dotenv").config();
 const secret = process.env.JWT_SECRET;
 const jwt = require('jsonwebtoken');
+
 const Scholarship = require('./../models/scholarship');
-const scholarship = require('./../models/scholarship');
+const Mentor = require('./../models/mentor');
 
 module.exports.getUsers = async (req, res) => {
 
@@ -113,4 +114,8 @@ module.exports.login = async (req, res) => {
         })
     }
 
+}
+
+module.exports.getMentors = async (req, res) => {
+    
 }

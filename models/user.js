@@ -22,6 +22,7 @@ const UserSchema = new Mongoose.Schema({
     resume: String,
     profile_pic: String,
     category: String,
+    gender: String,
     college_name: String,
     course: String,
     yearOfStudy: String,
