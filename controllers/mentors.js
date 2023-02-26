@@ -26,3 +26,26 @@ module.exports.addMentor = async (req, res) => {
     };
 
 };
+
+module.exports.getMentors = async (req, res) => {
+    try {
+        
+        const mentors = await Mentor.find({});
+
+        res.status(200).json({
+            description: "Mentors Fetched Successfully!",
+            content: mentors
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            description: 'Internal Server Error',
+            content: {
+                type: 'System error',
+                code: '500',
+                path: '/scholarship',
+                message: `Error processing request ${error.message}`
+            }
+        });
+    }
+}

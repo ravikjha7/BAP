@@ -21,15 +21,11 @@ const MentorSchema = new Mongoose.Schema({
     about: String,
     qualification: String,
     experience: String,
-    noOfmeetings: {
+    noOfMeetings: {
         type: Number,
         default: 0
     },
-    expertise: String,
-    available_slots: {
-        type: [Object],
-        default: []
-    }
+    expertise: String
 
 });
 

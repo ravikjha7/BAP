@@ -1,12 +1,15 @@
 const User = require('./../models/user');
 const Scholarship = require('../models/scholarship');
 const UserScholarship = require('../models/userscholarship');
+const ScholarshipUser = require('./../models/scholarshipuser');
 
 module.exports.applyScholarship = async (req, res) => {
 
     try {
         
         const { scholarship_id } = req.body;
+
+        const { name, why_apply , aadhar_card, caste_certificate='', income_certificate='' } = req.body;
 
         let scholarship = await Scholarship.findById(scholarship_id);
 
@@ -20,6 +23,22 @@ module.exports.applyScholarship = async (req, res) => {
                 }
             });
         };
+
+        let theUser = await User.findById(req.userId);
+
+        let f1 = scholarship.gender && scholarship.gender !== theUser.gender;
+        let f2 = scholarship.categories && !scholarship.categories.includes(theUser.category ? theUser.category : 'open');
+        
+        if(f1 || f2) {
+            res.status(404).json({
+                description: "You are not Eligible for the Scholarship !!!",
+                content: {
+                    type: 'Client Error',
+                    code: '404',
+                    message: 'You are not eligible for the Scholarship'
+                }
+            });
+        }
 
         let user = await UserScholarship.findOne({"_id": req.userId});
 
@@ -39,20 +58,32 @@ module.exports.applyScholarship = async (req, res) => {
             description: scholarship.description
         });
 
-        scholarship.applied_users.push(user._id);
+        scholarship.applied_users += 1;
 
         await user.save();
         await scholarship.save();
 
-        user = await User.findById(user._id);
+        scholarship = await ScholarshipUser.findOne({ "_id": scholarship_id });
 
-        user.noOfScholarships += 1;
+        if(!scholarship) scholarship = await ScholarshipUser.create({"_id": scholarship_id});
 
-        await user.save();
+        scholarship.applied_users.push({
+            id: req.userId,
+            name,
+            why_apply,
+            aadhar_card,
+            income_certificate,
+            caste_certificate
+        });
+        
+        theUser.noOfScholarships += 1;
+        
+        await theUser.save();
+        await scholarship.save();
 
         res.status(200).json({
             description: 'Applied Successfully !!!',
-            content: user
+            content: scholarship
         });
 
     } catch (error) {

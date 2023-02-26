@@ -27,9 +27,18 @@ const ScholarshipSchema = new Mongoose.Schema({
         type: String,
         required: true
     },
-    applied_users: [String],
-    accepted_users: [String],
-    rejected_users: [String]
+    applied_users: {
+        type: Number,
+        default: 0
+    },
+    accepted_users: {
+        type: Number,
+        default: 0
+    },
+    rejected_users: {
+        type: Number,
+        default: 0
+    },
 });
 
 module.exports = Mongoose.model('Scholarship', ScholarshipSchema);
