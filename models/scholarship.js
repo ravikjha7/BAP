@@ -19,7 +19,7 @@ const ScholarshipSchema = new Mongoose.Schema({
     course: String,
     branch: String,
     deadline: {
-        type: Date,
+        type: String,
         required: true
     },
     income: Number,
