@@ -2,13 +2,16 @@ const Mongoose = require('mongoose');
 
 const SessionSchema = new Mongoose.Schema({
 
-    _id: {
+    mentor_id: {
         type: String,
         required: true
     },
     title: {
         type: String,
         required: true
+    },
+    description: {
+        type: String,
     },
     mentor_name: {
         type: String,

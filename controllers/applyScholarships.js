@@ -9,7 +9,7 @@ module.exports.applyScholarship = async (req, res) => {
         
         const { scholarship_id } = req.body;
 
-        const { name, why_apply , aadhar_card, caste_certificate='', income_certificate='' } = req.body;
+        const { name, email, why_apply , aadhar_card, caste_certificate='', income_certificate='' } = req.body;
 
         let scholarship = await Scholarship.findById(scholarship_id);
 
@@ -70,6 +70,7 @@ module.exports.applyScholarship = async (req, res) => {
         scholarship.applied_users.push({
             id: req.userId,
             name,
+            email,
             why_apply,
             aadhar_card,
             income_certificate,

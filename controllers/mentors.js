@@ -19,7 +19,7 @@ module.exports.addMentor = async (req, res) => {
             content: {
                 type: 'System error',
                 code: '500',
-                path: '/scholarship',
+                path: '/mentor/add',
                 message: `Error processing request ${error.message}`
             }
         });
@@ -30,7 +30,10 @@ module.exports.addMentor = async (req, res) => {
 module.exports.getMentors = async (req, res) => {
     try {
         
-        const mentors = await Mentor.find({});
+        const query = {};
+        if(req.query.name) query.name = new RegExp(req.query.name, 'i');
+
+        const mentors = await Mentor.find(query);
 
         res.status(200).json({
             description: "Mentors Fetched Successfully!",
@@ -43,9 +46,39 @@ module.exports.getMentors = async (req, res) => {
             content: {
                 type: 'System error',
                 code: '500',
-                path: '/scholarship',
+                path: '/mentor',
                 message: `Error processing request ${error.message}`
             }
         });
     }
+}
+
+module.exports.getMentor = async (req, res) => {
+
+    try {
+        
+        const { id } = req.params;
+
+        const mentor = await Mentor.findById(id);
+
+        res.status(200).json({
+            description: 'Mentor fetched successfully',
+            content: mentor
+        });
+
+    } catch (error) {
+        
+        res.status(500).json({
+            description: 'Fetching mentor failed due to some unexpected error',
+            content: {
+                type: 'System error',
+                code: '500',
+                path: '/mentor',
+                message: `Error processing request ${error.message}`
+            }
+        });
+
+    }    
+
+
 }
