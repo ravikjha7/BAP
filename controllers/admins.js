@@ -39,34 +39,18 @@ module.exports.getScholarships = async (req, res) => {
         
         let scholarhipsFetched = await Scholarship.find({});
 
-        let scholarships = [];
-
-        scholarhipsFetched.forEach(scholarship => {
-            scholarships.push({
-                name: scholarship.name,
-                description: scholarship.description,
-                categories: scholarship.categories,
-                _id: scholarship._id,
-                gender: scholarship.gender,
-                deadline: scholarship.deadline,
-                income: scholarship.income,
-                amount: scholarship.amount,
-                noOfAppliedUsers: scholarship.applied_users.length,
-                noOfAcceptedUsers: scholarship.accepted_users.length,
-                noOfRejectedUsers: scholarship.rejected_users.length
-            });
-        });
+        // console.log("WHat");
 
         res.status(200).json({
             description: "Scholarships fetched Successfully !!!",
-            content: scholarships
+            content: scholarhipsFetched
         });
 
 
     } catch (error) {
         
         res.status(500).json({
-            description: 'Scholarships could not be fetchef due to unexpected error',
+            description: 'Scholarships could not be fetched due to unexpected error',
             content: {
                 type: 'System error',
                 code: '500',
